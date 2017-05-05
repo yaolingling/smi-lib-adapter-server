@@ -1,0 +1,5 @@
+/bin/
+/build/
+.gradle/2.12/taskArtifacts/cache.properties
+.gradle/
+.settings/

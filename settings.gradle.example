@@ -1,0 +1,6 @@
+include ':commons-model'
+include ':wsmanlib'
+include ':wsmanclient'
+project(':commons-model').projectDir = new File (settingsDir, '../commons-model')
+project(':wsmanlib').projectDir = new File (settingsDir, '../wsmanlib')
+project(':wsmanclient').projectDir = new File (settingsDir, '../wsmanclient')
