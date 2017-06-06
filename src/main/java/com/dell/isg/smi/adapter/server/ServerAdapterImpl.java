@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.dell.isg.smi.wsman.command.entity.DCIMNICViewType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSoftwareIdentityType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSystemViewType;
+import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.entity.LcLogEntry;
 import com.dell.isg.smi.wsman.command.entity.SelLogEntry;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
@@ -158,5 +159,11 @@ public class ServerAdapterImpl implements IServerAdapter {
     public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) {
         return saConfigDelegate.enumerateDcimSoftwareIdentity(wsmanCredentials);
     }
+
+    @Override
+    public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception {
+        return saConfigDelegate.getIdracCardStringView(credentials);
+    }
+
 
 }

@@ -90,9 +90,12 @@ ext {
 
 dependencies {
 
-    compile 'com.dell.isg.smi:commons-model:1.0.80'
-    compile 'com.dell.isg.smi:commons-elm:1.0.76'
-    compile 'com.dell.isg.smi:commons-utilities:1.0.26'
+//    compile 'com.dell.isg.smi:commons-model:1.0.80'
+//    compile 'com.dell.isg.smi:commons-elm:1.0.76'
+//    compile 'com.dell.isg.smi:commons-utilities:1.0.26'
+    compile 'com.dell.isg.smi:commons-model:1.0-SNAPSHOT'
+    compile 'com.dell.isg.smi:commons-elm:1.0-SNAPSHOT'
+    compile 'com.dell.isg.smi:commons-utilities:1.0-SNAPSHOT'
     compile 'com.dell.isg.smi:wsmanclient:+'
 	compile 'com.dell.isg.smi:wsmanlib:+'
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
