@@ -3,6 +3,7 @@
  */
 package com.dell.isg.smi.adapter.server.delegate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
 import com.dell.isg.smi.wsman.command.BlinkLED;
 import com.dell.isg.smi.wsman.command.EnumerateIDRACCardEnumCmd;
+import com.dell.isg.smi.wsman.command.EnumerateIDRACCardStrCmd;
 import com.dell.isg.smi.wsman.command.EnumerateLCLogEntryCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSelLogEntryCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSoftwareIdentityCmd;
@@ -40,6 +42,7 @@ import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 
 /**
  * @author prashanth.gowda
+ * @param <IDRACCardStringViewList>
  *
  */
 @Component("saConfigDelegate")
@@ -170,6 +173,21 @@ public class ServerAdapterConfigurationDelegate {
             logger.info("Exiting getIdracCradForUpdate {} ", address);
         }
         return idracCardStringView;
+    }
+
+    
+    public List<IDRACCardStringView> getIdracCardStringView(WsmanCredentials creds) {
+    	
+        EnumerateIDRACCardStrCmd enumerateIdracCardStrCmd = new EnumerateIDRACCardStrCmd(creds.getAddress(), creds.getUserName(), creds.getPassword());
+        List<IDRACCardStringView> idracCardStringViewList = Collections.emptyList();
+        try {
+            idracCardStringViewList = enumerateIdracCardStrCmd.execute();
+        } catch (Exception e) {
+            logger.error("Unable to get IDRACCardStringViewList for:  {} ", creds.getAddress());
+        } finally {
+            logger.debug("Exiting getIdracCardStringView {} ", creds.getAddress());
+        }
+        return idracCardStringViewList;
     }
 
 
