@@ -8,6 +8,7 @@ import java.util.List;
 import com.dell.isg.smi.wsman.command.entity.DCIMNICViewType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSoftwareIdentityType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSystemViewType;
+import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.entity.LcLogEntry;
 import com.dell.isg.smi.wsman.command.entity.SelLogEntry;
 import com.dell.isg.smi.adapter.server.model.HardwareInventory;
@@ -80,5 +81,9 @@ public interface IServerAdapter {
 
 
     public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials);
+
+
+	public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception;
+
 
 }
