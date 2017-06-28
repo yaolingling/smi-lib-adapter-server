@@ -4,6 +4,7 @@
 package com.dell.isg.smi.adapter.server.delegate;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
+import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
+import com.dell.isg.smi.wsman.IdracWSManClient;
+import com.dell.isg.smi.wsman.WSCommandRNDConstant;
+import com.dell.isg.smi.wsman.WSManBaseCommand.WSManClassEnum;
+import com.dell.isg.smi.wsman.WSManClientFactory;
 import com.dell.isg.smi.wsman.command.BlinkLED;
-import com.dell.isg.smi.wsman.command.EnumerateIDRACCardEnumCmd;
-import com.dell.isg.smi.wsman.command.EnumerateIDRACCardStrCmd;
 import com.dell.isg.smi.wsman.command.EnumerateLCLogEntryCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSelLogEntryCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSoftwareIdentityCmd;
@@ -28,17 +33,13 @@ import com.dell.isg.smi.wsman.command.ResetIdracCmd;
 import com.dell.isg.smi.wsman.command.SetEventsCmd;
 import com.dell.isg.smi.wsman.command.UnblinkLED;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
+import com.dell.isg.smi.wsman.command.WsmanEnumerate;
 import com.dell.isg.smi.wsman.command.entity.DCIMSoftwareIdentityType;
 import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.entity.LcLogEntry;
 import com.dell.isg.smi.wsman.command.entity.SelLogEntry;
 import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.KeyValuePair;
-import com.dell.isg.smi.wsman.IdracWSManClient;
-import com.dell.isg.smi.wsman.WSCommandRNDConstant;
-import com.dell.isg.smi.wsman.WSManClientFactory;
-import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
-import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 
 /**
  * @author prashanth.gowda
@@ -161,27 +162,42 @@ public class ServerAdapterConfigurationDelegate {
 
     private IDRACCardStringView getIdracCardForUpdate(String address, String username, String password) {
         String trapValueString = "#SNMP.1#TrapFormat";
-        logger.info("Entering getIdracCradForUpdate {} ", address);
-        EnumerateIDRACCardEnumCmd enumerateIdracCardEnumCmd = new EnumerateIDRACCardEnumCmd(address, username, password);
+        logger.info("Entering getIdracCardForUpdate {} ", address);
         IDRACCardStringView idracCardStringView = null;
         try {
-            List<IDRACCardStringView> idracCardStringViewList = enumerateIdracCardEnumCmd.execute();
+            List<IDRACCardStringView> idracCardStringViewList = (List<IDRACCardStringView>) getIdracCardEnum(address, username, password);
             idracCardStringView = CollectionUtils.find(idracCardStringViewList, predicateIdracCardStringView(trapValueString));
         } catch (Exception e) {
             logger.info("Unable to get IDRACCardStringView for attribute update  {} ", address);
         } finally {
-            logger.info("Exiting getIdracCradForUpdate {} ", address);
+            logger.info("Exiting getIdracCardForUpdate {} ", address);
         }
         return idracCardStringView;
     }
 
-    
-    public List<IDRACCardStringView> getIdracCardStringView(WsmanCredentials creds) {
-    	
-        EnumerateIDRACCardStrCmd enumerateIdracCardStrCmd = new EnumerateIDRACCardStrCmd(creds.getAddress(), creds.getUserName(), creds.getPassword());
-        List<IDRACCardStringView> idracCardStringViewList = Collections.emptyList();
+//    public List<IDRACCardStringView> getIdracCardEnum(String address, String username, String password) {
+    public Object getIdracCardEnum(String address, String username, String password) {
+        logger.debug("Entering getIdracCardEnum {} ", address);
+        IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(address, username, password);
+        Object idracCardEnum = Collections.emptyList();
         try {
-            idracCardStringViewList = enumerateIdracCardStrCmd.execute();
+        	idracCardEnum = idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_IDRACCardView.name()));
+        } catch (Exception e) {
+            logger.error("Unable to get IDRACCardEnum {} ", address);
+        } finally {
+            logger.debug("Exiting getIdracCardEnum {} ", address);
+        }
+        return idracCardEnum;
+    }
+
+    
+//    public List<IDRACCardStringView> getIdracCardStringView(WsmanCredentials creds) {
+    public Object getIdracCardStringView(WsmanCredentials creds) {
+        logger.debug("Entering getIdracCardStringView {} ", creds.getAddress());
+        IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(creds.getAddress(), creds.getUserName(), creds.getPassword());
+        Object idracCardStringViewList = Collections.emptyList();
+        try {
+            idracCardStringViewList = idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_iDRACCardString.name()));
         } catch (Exception e) {
             logger.error("Unable to get IDRACCardStringViewList for:  {} ", creds.getAddress());
         } finally {
@@ -191,6 +207,16 @@ public class ServerAdapterConfigurationDelegate {
     }
 
 
+    public Object getIdracDetails(WsmanCredentials creds) throws Exception {
+        Map<String, Object> results = new LinkedHashMap<>();
+        
+        IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(creds.getAddress(), creds.getUserName(), creds.getPassword());
+        results.put(WSManClassEnum.DCIM_IDRACCardView.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_IDRACCardView.name())));
+        results.put(WSManClassEnum.DCIM_iDRACCardEnumeration.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_iDRACCardEnumeration.name())));
+        results.put(WSManClassEnum.DCIM_iDRACCardString.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_iDRACCardString.name())));
+        return results;
+    }
+    
     // InstanceID = iDRAC.Embedded.1#SNMP.1#TrapFormat
     private Predicate<IDRACCardStringView> predicateIdracCardStringView(String compareValue) {
         return new Predicate<IDRACCardStringView>() {

@@ -13,6 +13,7 @@ import com.dell.isg.smi.wsman.command.entity.LcLogEntry;
 import com.dell.isg.smi.wsman.command.entity.SelLogEntry;
 import com.dell.isg.smi.adapter.server.model.HardwareInventory;
 import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
+import com.dell.isg.smi.adapter.server.model.IdracDetail;
 import com.dell.isg.smi.adapter.server.model.NetworkShare;
 import com.dell.isg.smi.adapter.server.model.PowerMonitoring;
 import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
@@ -77,13 +78,19 @@ public interface IServerAdapter {
     public boolean stopBlinkLed(WsmanCredentials wsmanCredentials) throws Exception;
 
 
-    public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception;
+    public Object collectNics(WsmanCredentials credentials) throws Exception;
 
 
     public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials);
 
 
-	public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception;
+	public Object collectIdracString(WsmanCredentials credentials) throws Exception;
+
+
+	public Object collectIdracCardEnum(WsmanCredentials credentials) throws Exception;
+
+
+	public Object collectIdracDetails(WsmanCredentials credentials) throws Exception;
 
 
 }

@@ -19,6 +19,7 @@ import com.dell.isg.smi.adapter.server.delegate.ServerAdapterConfigurationDelega
 import com.dell.isg.smi.adapter.server.delegate.ServerAdapterOnboardingDelegate;
 import com.dell.isg.smi.adapter.server.model.HardwareInventory;
 import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
+import com.dell.isg.smi.adapter.server.model.IdracDetail;
 import com.dell.isg.smi.adapter.server.model.NetworkShare;
 import com.dell.isg.smi.adapter.server.model.PowerMonitoring;
 import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
@@ -142,7 +143,7 @@ public class ServerAdapterImpl implements IServerAdapter {
 
 
     @Override
-    public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {
+    public Object collectNics(WsmanCredentials credentials) throws Exception {
         return saOnboardingDelegate.collectNics(credentials);
     }
 
@@ -151,9 +152,7 @@ public class ServerAdapterImpl implements IServerAdapter {
     public Object pollJobStatus(WsmanCredentials wsmanCredentials, String jobId, int sleepTimeInMillis, int retryCount) throws Exception {
         IdracJobStatusCheckCmd cmd = new IdracJobStatusCheckCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), jobId, sleepTimeInMillis, retryCount);
         return cmd.execute();
-
     }
-
 
     @Override
     public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) {
@@ -161,9 +160,18 @@ public class ServerAdapterImpl implements IServerAdapter {
     }
 
     @Override
-    public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception {
+    public Object collectIdracString(WsmanCredentials credentials) throws Exception {
         return saConfigDelegate.getIdracCardStringView(credentials);
     }
 
+    @Override
+    public Object collectIdracCardEnum(WsmanCredentials credentials) throws Exception {
+        return saConfigDelegate.getIdracCardEnum(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
+    }
+
+    @Override
+    public Object collectIdracDetails(WsmanCredentials credentials) throws Exception {
+        return saConfigDelegate.getIdracDetails(credentials);
+    }
 
 }

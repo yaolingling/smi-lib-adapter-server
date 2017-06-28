@@ -5,18 +5,34 @@ package com.dell.isg.smi.adapter.server.delegate;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import com.dell.isg.smi.wsman.command.ApplyXmlConfigCmd;
+import com.dell.isg.smi.adapter.server.ServerAdapterConstants;
+import com.dell.isg.smi.adapter.server.model.HardwareInventory;
+import com.dell.isg.smi.adapter.server.model.NetworkShare;
+import com.dell.isg.smi.adapter.server.model.PowerMonitoring;
+import com.dell.isg.smi.adapter.server.model.PowerMonitoringConstants;
+import com.dell.isg.smi.adapter.server.model.Storage;
+import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
+import com.dell.isg.smi.adapter.server.powerthermal.IPowerThermalAdapter;
+import com.dell.isg.smi.adapter.server.powerthermal.PowerThermalAdapterImpl;
+import com.dell.isg.smi.wsman.IdracWSManClient;
+import com.dell.isg.smi.wsman.WSManBaseCommand.WSManClassEnum;
+import com.dell.isg.smi.wsman.WSManClientFactory;
+import com.dell.isg.smi.wsman.command.DcimEnumerationCmd;
+import com.dell.isg.smi.wsman.command.DcimIntegerCmd;
+import com.dell.isg.smi.wsman.command.DcimStringCmd;
 import com.dell.isg.smi.wsman.command.EnumerateCPUViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateControllerBatteryViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateControllerView;
@@ -30,9 +46,6 @@ import com.dell.isg.smi.wsman.command.EnumerateNumericSensorViewCmd;
 import com.dell.isg.smi.wsman.command.EnumeratePcieSsdViewCmd;
 import com.dell.isg.smi.wsman.command.EnumeratePhysicalDiskView;
 import com.dell.isg.smi.wsman.command.EnumeratePowerSupplyViewCmd;
-import com.dell.isg.smi.wsman.command.DcimEnumerationCmd;
-import com.dell.isg.smi.wsman.command.DcimIntegerCmd;
-import com.dell.isg.smi.wsman.command.DcimStringCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSensorViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSystemViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVFlashViewCmd;
@@ -41,10 +54,15 @@ import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
 import com.dell.isg.smi.wsman.command.GetDeviceLicensesCmd;
 import com.dell.isg.smi.wsman.command.NicAttributeConstants;
 import com.dell.isg.smi.wsman.command.RaidAttributeConstants;
+import com.dell.isg.smi.wsman.command.WsmanEnumerate;
 import com.dell.isg.smi.wsman.command.entity.ControllerBatteryView;
 import com.dell.isg.smi.wsman.command.entity.ControllerView;
 import com.dell.isg.smi.wsman.command.entity.DCIMNICViewType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSystemViewType;
+import com.dell.isg.smi.wsman.command.entity.DcimEnumCmdView;
+import com.dell.isg.smi.wsman.command.entity.DcimIntegerCmdView;
+import com.dell.isg.smi.wsman.command.entity.DcimStringCmdView;
+import com.dell.isg.smi.wsman.command.entity.FanView;
 import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.entity.NICStatistics;
 import com.dell.isg.smi.wsman.command.entity.NicCapabilities;
@@ -52,28 +70,12 @@ import com.dell.isg.smi.wsman.command.entity.NumericSensorView;
 import com.dell.isg.smi.wsman.command.entity.PcieSsdView;
 import com.dell.isg.smi.wsman.command.entity.PhysicalDiskView;
 import com.dell.isg.smi.wsman.command.entity.SensorTypeEnum;
-import com.dell.isg.smi.wsman.command.entity.DcimEnumCmdView;
-import com.dell.isg.smi.wsman.command.entity.DcimIntegerCmdView;
-import com.dell.isg.smi.wsman.command.entity.DcimStringCmdView;
-import com.dell.isg.smi.wsman.command.entity.FanView;
 import com.dell.isg.smi.wsman.command.entity.SensorView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIDracEnumAttributes;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
 import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.DeviceLicense;
 import com.dell.isg.smi.wsman.entity.KeyValuePair;
-import com.dell.isg.smi.wsman.IdracWSManClient;
-import com.dell.isg.smi.wsman.WSManBaseCommand.WSManClassEnum;
-import com.dell.isg.smi.wsman.WSManClientFactory;
-import com.dell.isg.smi.adapter.server.ServerAdapterConstants;
-import com.dell.isg.smi.adapter.server.model.HardwareInventory;
-import com.dell.isg.smi.adapter.server.model.NetworkShare;
-import com.dell.isg.smi.adapter.server.model.PowerMonitoring;
-import com.dell.isg.smi.adapter.server.model.PowerMonitoringConstants;
-import com.dell.isg.smi.adapter.server.model.Storage;
-import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
-import com.dell.isg.smi.adapter.server.powerthermal.IPowerThermalAdapter;
-import com.dell.isg.smi.adapter.server.powerthermal.PowerThermalAdapterImpl;
 
 /**
  * @author prashanth.gowda
@@ -254,11 +256,16 @@ public class ServerAdapterOnboardingDelegate {
     }
 
 
-    public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {
-        logger.info("Collecting NICs info for server onboarding ");
+    public Object collectNics(WsmanCredentials credentials) throws Exception {
+        logger.info("Collecting NIC info.");
+        
+        Map<String, Object> results = new LinkedHashMap<>();
+        
         IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
-        return idracWsManClient.execute(new EnumerateNICView());
-
+        results.put(WSManClassEnum.DCIM_NICView.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_NICView.name())));
+        results.put(WSManClassEnum.DCIM_NICEnumeration.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_NICEnumeration.name())));
+        results.put(WSManClassEnum.DCIM_NICString.name(), idracWsManClient.execute(new WsmanEnumerate(WSManClassEnum.DCIM_NICString.name())));
+        return results;
     }
 
 
