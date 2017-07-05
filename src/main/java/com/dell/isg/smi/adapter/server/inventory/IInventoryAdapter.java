@@ -34,4 +34,6 @@ public interface IInventoryAdapter {
 	public Object collectBios(WsmanCredentials credentials) throws Exception;
 
 	public Object collectBoot(WsmanCredentials credentials) throws Exception;
+
+    public Object collect(WsmanCredentials wsmanCredentials, String dcimType) throws Exception;
 }

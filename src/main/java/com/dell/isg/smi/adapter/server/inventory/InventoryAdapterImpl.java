@@ -144,4 +144,19 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
 
     }
     
+    @Override
+    public Object collect(WsmanCredentials wsmanCredentials, String dcimType)  throws Exception{
+        logger.debug("Collecting: {} - {} ", dcimType, wsmanCredentials.getAddress());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        Object response;
+        try {
+            response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.valueOf(dcimType)));
+        } catch(Exception e){
+            String error = "{ \"Illegal type.  Valid types are\": ";
+            return WSManClassEnum.values();
+        }
+        return response;
+
+   }
+   
 }
