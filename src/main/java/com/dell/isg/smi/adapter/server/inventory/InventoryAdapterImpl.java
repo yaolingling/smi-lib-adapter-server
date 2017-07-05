@@ -51,7 +51,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
 	@Override
     public Object collectSummary(WsmanCredentials credentials) throws Exception {
         logger.info("collecting System Identity Info for {} ", credentials.getAddress());
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
         Object response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemView));
         return response;
     }
@@ -61,7 +61,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     public Object collectNics(WsmanCredentials credentials) throws Exception {
         logger.info("Collecting NIC info.");
         Map<String, Object> results = new LinkedHashMap<>();
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
         results.put(WSManClassEnum.DCIM_NICView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_NICView)));
         results.put(WSManClassEnum.DCIM_NICEnumeration.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_NICEnumeration)));
         results.put(WSManClassEnum.DCIM_NICString.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_NICString)));
@@ -71,14 +71,14 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     @Override
     public Object collectSelLogs(WsmanCredentials wsmanCredentials) throws Exception {
     	logger.info("collecting Sel log for {} ", wsmanCredentials.getAddress());
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         Object response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Sellogentry));
         return response;
     }
 
     @Override
     public Object collectLcLogs(WsmanCredentials wsmanCredentials) throws Exception {
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         Object response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_LCLogEntry));
         return response;
     }
@@ -87,7 +87,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     public Object collectSoftware(WsmanCredentials wsmanCredentials) throws Exception {
     	logger.info("Collecting Software Inventory {} ", wsmanCredentials.getAddress());
     	Map<String, Object> results = new LinkedHashMap<>();
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         results.put(WSManClassEnum.DCIM_SoftwareIdentity.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SoftwareIdentity)));
         results.put(WSManClassEnum.CIM_InstalledSoftwareIdentity.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.CIM_InstalledSoftwareIdentity)));
         return results;
@@ -97,7 +97,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     public Object collectBios(WsmanCredentials wsmanCredentials) throws Exception {
     	logger.info("Collecting Bios {} ", wsmanCredentials.getAddress());
     	Map<String, Object> results = new LinkedHashMap<>();
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         results.put(WSManClassEnum.DCIM_BIOSEnumeration.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BIOSEnumeration)));
         results.put(WSManClassEnum.DCIM_BIOSString.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BIOSString)));
         results.put(WSManClassEnum.DCIM_BIOSInteger.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BIOSInteger)));
@@ -108,7 +108,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     public Object collectBoot(WsmanCredentials wsmanCredentials) throws Exception {
     	logger.info("Collecting Boot {} ", wsmanCredentials.getAddress());
     	Map<String, Object> results = new LinkedHashMap<>();
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         results.put(WSManClassEnum.DCIM_BootConfigSetting.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BootConfigSetting)));
         results.put(WSManClassEnum.DCIM_BootSourceSetting.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BootSourceSetting)));
         results.put(WSManClassEnum.DCIM_BIOSEnumeration.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_BIOSEnumeration)));
@@ -119,7 +119,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     public Object collectIdracDetails(WsmanCredentials creds) throws Exception {
     	logger.info("Collecting IDRAC details.");
         Map<String, Object> results = new LinkedHashMap<>();
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(creds.getAddress(), creds.getUserName(), creds.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(creds.getAddress(), creds.getUserName(), creds.getPassword());
         results.put(WSManClassEnum.DCIM_IDRACCardView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_IDRACCardView)));
         results.put(WSManClassEnum.DCIM_iDRACCardEnumeration.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_iDRACCardEnumeration)));
         results.put(WSManClassEnum.DCIM_iDRACCardString.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_iDRACCardString)));
@@ -130,7 +130,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     @Override
     public Object collectIdracCardEnum(WsmanCredentials wsmanCredentials) throws Exception{
         logger.debug("Collecting IdracCardEnum {} ", wsmanCredentials.getAddress());
-        IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+        IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
         Object response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_IDRACCardView));
         return response;
     }
@@ -138,7 +138,7 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
     @Override
     public Object collectIdracString(WsmanCredentials wsmanCredentials)  throws Exception{
     	 logger.debug("Collecting IdracCardString {} ", wsmanCredentials.getAddress());
-         IWSManClient IWSManClient = com.dell.isg.smi.wsman.WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+         IWSManClient IWSManClient = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
          Object response = IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_iDRACCardString));
          return response;
 
