@@ -96,7 +96,8 @@ dependencies {
     compile 'com.dell.isg.smi:commons-model:1.0-SNAPSHOT'
     compile 'com.dell.isg.smi:commons-elm:1.0-SNAPSHOT'
     compile 'com.dell.isg.smi:commons-utilities:1.0-SNAPSHOT'
-    compile 'com.dell.isg.smi:wsmanclient:1.0.28'
+//    compile 'com.dell.isg.smi:wsmanclient:1.0.28'
+    compile files('src/libs/wsmanclient-1.0-SNAPSHOT.jar')
     //compile 'com.dell.isg.smi:wsmanlib:1.0.40'
     compile files('src/libs/wsmanlib-1.0-SNAPSHOT.jar')
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
