@@ -20,22 +20,24 @@ import com.dell.isg.smi.adapter.server.inventory.IInventoryAdapter;
 import com.dell.isg.smi.adapter.server.model.NetworkShare;
 import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
-import com.dell.isg.smi.wsman.WSCommandRNDConstant;
-import com.dell.isg.smi.wsman.command.BlinkLED;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
 import com.dell.isg.smi.wsman.command.GetDeviceLicensesCmd;
 import com.dell.isg.smi.wsman.command.PowerBootCmd;
 import com.dell.isg.smi.wsman.command.PowerBootCmd.PowerRebootEnum;
 import com.dell.isg.smi.wsman.command.ResetIdracCmd;
 import com.dell.isg.smi.wsman.command.SetEventsCmd;
-import com.dell.isg.smi.wsman.command.UnblinkLED;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
-import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
 import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.DeviceLicense;
-import com.dell.isg.smi.wsman.entity.KeyValuePair;
+import com.dell.isg.smi.wsmanclient.IWSManClient;
+import com.dell.isg.smi.wsmanclient.WSCommandRNDConstant;
+import com.dell.isg.smi.wsmanclient.WSManClientFactory;
+import com.dell.isg.smi.wsmanclient.impl.cmd.InvokeBlinkLedCmd;
+import com.dell.isg.smi.wsmanclient.impl.model.IDRACCardStringView;
+import com.dell.isg.smi.wsmanclient.impl.model.KeyValuePair;
+import com.dell.isg.smi.wsmanclient.model.InvokeCmdResponse;
 
 /**
  * @author prashanth.gowda
@@ -43,7 +45,7 @@ import com.dell.isg.smi.wsman.entity.KeyValuePair;
  *
  */
 @Component("configAdapter, configAdapterImpl")
-public class ConfigAdapterImpl implements IConfigAdapter{
+public class ConfigAdapterImpl implements IConfigAdapter {
 	
 	@Autowired
 	IInventoryAdapter inventoryAdapterImpl;
@@ -124,10 +126,10 @@ public class ConfigAdapterImpl implements IConfigAdapter{
         }
         return idracCardStringView;
     }
-
-
-
     
+
+
+
     // InstanceID = iDRAC.Embedded.1#SNMP.1#TrapFormat
     private Predicate<IDRACCardStringView> predicateIdracCardStringView(String compareValue) {
         return new Predicate<IDRACCardStringView>() {
@@ -190,16 +192,16 @@ public class ConfigAdapterImpl implements IConfigAdapter{
 
     @Override
     public boolean startBlinkLed(WsmanCredentials wsmanCredentials, int duration) throws Exception {
-        BlinkLED blinkLed = new BlinkLED(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), duration);
-        boolean result = (boolean) blinkLed.execute();
-        return result;
+    	IWSManClient client = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+		InvokeCmdResponse response = client.execute(new InvokeBlinkLedCmd(true, duration));
+        return (response.getReturnValue() == 0);
     }
 
     @Override
     public boolean stopBlinkLed(WsmanCredentials wsmanCredentials) throws Exception {
-        UnblinkLED unBlinkLed = new UnblinkLED(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
-        boolean result = (boolean) unBlinkLed.execute();
-        return result;
+    	IWSManClient client = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+		InvokeCmdResponse response = client.execute(new InvokeBlinkLedCmd(false));
+        return (response.getReturnValue() == 0);
     }
 
     @Override
