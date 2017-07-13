@@ -14,6 +14,7 @@ import com.dell.isg.smi.adapter.server.inventory.IInventoryAdapter;
 import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.adapter.server.powerthermal.IPowerThermalAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 
 
 /**
@@ -42,6 +43,15 @@ public class ServerAdapterManagerImplTest {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(result);
         System.out.println("Result :" + json);
+		 String current = JsonPath.parse(new
+				 ObjectMapper().writeValueAsString(result)).read("$.SystemBoardPwrConsumption.CurrentReading");
+		 System.out.println("current :" + current);
+			 String warning = JsonPath.parse(new
+					 ObjectMapper().writeValueAsString(result)).read("$.SystemBoardPwrConsumption.UpperThresholdNonCritical");
+	     System.out.println("warning :" + warning);
+			 String failure = JsonPath.parse(new
+					 ObjectMapper().writeValueAsString(result)).read("$.SystemBoardPwrConsumption.UpperThresholdCritical");
+		System.out.println("failure :" + failure);
     }
 
 
