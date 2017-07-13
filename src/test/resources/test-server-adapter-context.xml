@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+	<bean id="wsmanCredentials"
+		class="com.dell.isg.smi.adapter.server.model.WsmanCredentials">
+		<property name="address" value="100.68.124.31" />
+		<property name="userName" value="root" />
+		<property name="password" value="calvin" />
+	</bean>
+
+    <bean id="powerThermalAdapterImpl" class="com.dell.isg.smi.adapter.server.powerthermal.PowerThermalAdapterImpl" />
+    
+    <bean id="inventoryAdapterImpl" class="com.dell.isg.smi.adapter.server.inventory.InventoryAdapterImpl" />
+	
+	<!-- 	<bean id="serverDeviceHardwareAdapterImpl" class="com.dell.esg.icee.adapter.server.ServerDeviceHardwareAdapterImpl" />
+
+ 	<bean id="saConfigDelegate" class="com.dell.esg.icee.adapter.server.delegate.ServerAdapterConfigurationDelegate" />
+
+	<bean id="saOnboardingDelegate" class="com.dell.esg.icee.adapter.server.delegate.ServerAdapterOnboardingDelegate" />
+ -->
+</beans>
