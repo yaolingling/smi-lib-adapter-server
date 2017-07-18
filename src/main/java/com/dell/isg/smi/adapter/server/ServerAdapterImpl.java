@@ -8,6 +8,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dell.isg.smi.adapter.server.delegate.ServerAdapterConfigurationDelegate;
+import com.dell.isg.smi.adapter.server.delegate.ServerAdapterOnboardingDelegate;
+import com.dell.isg.smi.adapter.server.model.HardwareInventory;
+import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
+import com.dell.isg.smi.adapter.server.model.NetworkShare;
+import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.wsman.command.entity.DCIMNICViewType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSoftwareIdentityType;
 import com.dell.isg.smi.wsman.command.entity.DCIMSystemViewType;
@@ -15,13 +21,7 @@ import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.entity.LcLogEntry;
 import com.dell.isg.smi.wsman.command.entity.SelLogEntry;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
-import com.dell.isg.smi.adapter.server.delegate.ServerAdapterConfigurationDelegate;
-import com.dell.isg.smi.adapter.server.delegate.ServerAdapterOnboardingDelegate;
-import com.dell.isg.smi.adapter.server.model.HardwareInventory;
-import com.dell.isg.smi.adapter.server.model.HypervisorInformation;
-import com.dell.isg.smi.adapter.server.model.NetworkShare;
-import com.dell.isg.smi.adapter.server.model.PowerMonitoring;
-import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
+import com.dell.isg.smi.wsman.model.XmlConfig;
 
 /**
  * @author rahman.muhammad
@@ -164,6 +164,20 @@ public class ServerAdapterImpl implements IServerAdapter {
     public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception {
         return saConfigDelegate.getIdracCardStringView(credentials);
     }
+
+
+	@Override
+	public XmlConfig exportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String components,
+			String mode) throws Exception {
+		return saOnboardingDelegate.exportServerConfig(wsmanCredentials, networkShare, components, mode);
+	}
+
+
+	@Override
+	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare,int shutdownType)
+			throws Exception {
+		return saOnboardingDelegate.applyServerConfig(wsmanCredentials, networkShare, shutdownType);
+	}
 
 
 }
