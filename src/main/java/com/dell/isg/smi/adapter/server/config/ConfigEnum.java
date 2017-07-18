@@ -9,36 +9,46 @@ package com.dell.isg.smi.adapter.server.config;
  */
 public class ConfigEnum {
 
-    public enum SHARE_TYPES {
-        NFS("0"), CIFS("2");
+	public enum SHARE_TYPES {
+		NFS("0"), CIFS("2");
 
-        String value;
+		String value;
 
+		SHARE_TYPES(String value) {
+			this.value = value;
+		}
 
-        SHARE_TYPES(String value) {
-            this.value = value;
-        }
+		public String getValue() {
+			return this.value;
+		}
+	}
 
+	public enum SHARE_NAME {
+		NFS("nfs"), CIFS("cifs");
 
-        public String getValue() {
-            return this.value;
-        }
-    }
+		String value;
 
-    public enum SHARE_NAME {
-        NFS("nfs"), CIFS("cifs");
+		SHARE_NAME(String value) {
+			this.value = value;
+		}
 
-        String value;
+		public String getValue() {
+			return this.value;
+		}
+	}
 
+	public enum EXPORT_MODE {
+		NORMAL("0"), CLONE("1"), REPLACE("2");
 
-        SHARE_NAME(String value) {
-            this.value = value;
-        }
+		String value;
 
+		EXPORT_MODE(String value) {
+			this.value = value;
+		}
 
-        public String getValue() {
-            return this.value;
-        }
-    }
+		public String getValue() {
+			return this.value;
+		}
+	}
 
 }
