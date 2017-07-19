@@ -12,6 +12,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -78,6 +79,7 @@ import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.DeviceLicense;
 import com.dell.isg.smi.wsman.entity.KeyValuePair;
 import com.dell.isg.smi.wsman.model.XmlConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author prashanth.gowda
@@ -302,8 +304,10 @@ public class ServerAdapterOnboardingDelegate {
 	}
 
 	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
-		GetConfigResultsCmd result = new GetConfigResultsCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), jobId);
+		GetConfigResultsCmd cmd = new GetConfigResultsCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
+				wsmanCredentials.getPassword(), jobId);
+		String json = XML.toJSONObject((String) cmd.execute()).toString();
+		Object result = new ObjectMapper().readValue(json, Object.class);
 		return result;
 	}
 
