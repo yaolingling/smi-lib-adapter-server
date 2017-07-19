@@ -51,8 +51,10 @@ import com.dell.isg.smi.wsman.command.EnumerateVFlashViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVirtualDiskView;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
 import com.dell.isg.smi.wsman.command.ExportXmlConfigCmd;
+import com.dell.isg.smi.wsman.command.GetConfigResultsCmd;
 import com.dell.isg.smi.wsman.command.GetDeviceLicensesCmd;
 import com.dell.isg.smi.wsman.command.NicAttributeConstants;
+import com.dell.isg.smi.wsman.command.PeviewImportConfigCmd;
 import com.dell.isg.smi.wsman.command.RaidAttributeConstants;
 import com.dell.isg.smi.wsman.command.entity.ControllerBatteryView;
 import com.dell.isg.smi.wsman.command.entity.ControllerView;
@@ -279,14 +281,30 @@ public class ServerAdapterOnboardingDelegate {
 		return config;
 	}
 
-	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare,
-			int shutdownType)  throws Exception {
+	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, int shutdownType)
+			throws Exception {
 		ApplyXmlConfigCmd xmlConfig = new ApplyXmlConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
 				networkShare.getShareUserName(), networkShare.getSharePassword(), shutdownType);
 		XmlConfig config = xmlConfig.execute();
 		return config;
+	}
+
+	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		PeviewImportConfigCmd xmlConfig = new PeviewImportConfigCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
+				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
+				networkShare.getShareUserName(), networkShare.getSharePassword());
+		XmlConfig config = xmlConfig.execute();
+		return config;
+	}
+
+	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
+		GetConfigResultsCmd result = new GetConfigResultsCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), jobId);
+		return result;
 	}
 
 	public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {
