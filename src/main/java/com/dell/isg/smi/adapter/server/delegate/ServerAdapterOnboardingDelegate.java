@@ -303,12 +303,11 @@ public class ServerAdapterOnboardingDelegate {
 		return config;
 	}
 
-	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
+	public String previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
 		GetConfigResultsCmd cmd = new GetConfigResultsCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
 				wsmanCredentials.getPassword(), jobId);
 		String json = XML.toJSONObject((String) cmd.execute()).toString();
-		Object result = new ObjectMapper().readValue(json, Object.class);
-		return result;
+		return json;
 	}
 
 	public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {
