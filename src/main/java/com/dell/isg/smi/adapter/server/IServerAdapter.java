@@ -77,5 +77,8 @@ public interface IServerAdapter {
 			throws Exception;
 
 	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception;
+	
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
 
 }

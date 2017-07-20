@@ -192,4 +192,11 @@ public class ServerAdapterImpl implements IServerAdapter {
 	}
 
 
+	@Override
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		return saOnboardingDelegate.exportHardwareInventory(wsmanCredentials, networkShare);
+	}
+
+
 }

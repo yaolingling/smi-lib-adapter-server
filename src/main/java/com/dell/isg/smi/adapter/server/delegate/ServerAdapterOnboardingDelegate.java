@@ -50,6 +50,7 @@ import com.dell.isg.smi.wsman.command.EnumerateSensorViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSystemViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVFlashViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVirtualDiskView;
+import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
 import com.dell.isg.smi.wsman.command.ExportXmlConfigCmd;
 import com.dell.isg.smi.wsman.command.GetConfigResultsCmd;
@@ -79,7 +80,6 @@ import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.DeviceLicense;
 import com.dell.isg.smi.wsman.entity.KeyValuePair;
 import com.dell.isg.smi.wsman.model.XmlConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author prashanth.gowda
@@ -300,6 +300,15 @@ public class ServerAdapterOnboardingDelegate {
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
 				networkShare.getShareUserName(), networkShare.getSharePassword());
 		XmlConfig config = xmlConfig.execute();
+		return config;
+	}
+	
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
+		ExportHardwareInventoryCmd cmd = new ExportHardwareInventoryCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
+				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
+				networkShare.getShareUserName(), networkShare.getSharePassword());
+		XmlConfig config = cmd.execute();
 		return config;
 	}
 
