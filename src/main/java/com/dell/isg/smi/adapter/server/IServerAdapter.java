@@ -80,5 +80,8 @@ public interface IServerAdapter {
 	
 	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
 			throws Exception;
+	
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
 
 }

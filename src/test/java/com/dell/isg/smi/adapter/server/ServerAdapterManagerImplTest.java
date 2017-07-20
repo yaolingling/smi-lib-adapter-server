@@ -50,4 +50,10 @@ public class ServerAdapterManagerImplTest {
     	System.out.println("Result : "+ ReflectionToStringBuilder.toString(result, new CustomRecursiveToStringStyle(99)));
     }
     
+    @Ignore
+    @Test
+    public void exportFactorySettingTest() throws Exception {
+    	XmlConfig result = serverAdapterImpl.exportFactorySetting(wsmanCredentials, networkShare);
+    	System.out.println("Result : "+ ReflectionToStringBuilder.toString(result, new CustomRecursiveToStringStyle(99)));
+    }
 }

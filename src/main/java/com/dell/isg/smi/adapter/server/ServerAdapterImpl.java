@@ -199,4 +199,11 @@ public class ServerAdapterImpl implements IServerAdapter {
 	}
 
 
+	@Override
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		return saOnboardingDelegate.exportFactorySetting(wsmanCredentials, networkShare);
+	}
+
+
 }
