@@ -73,4 +73,15 @@ public interface IServerAdapter {
 	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, int shutdownType)
 			throws Exception;
 
+	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
+
+	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception;
+	
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
+	
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
+
 }
