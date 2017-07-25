@@ -12,6 +12,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -49,10 +50,14 @@ import com.dell.isg.smi.wsman.command.EnumerateSensorViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateSystemViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVFlashViewCmd;
 import com.dell.isg.smi.wsman.command.EnumerateVirtualDiskView;
+import com.dell.isg.smi.wsman.command.ExportFactorySettingConfigCmd;
+import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
 import com.dell.isg.smi.wsman.command.ExportXmlConfigCmd;
+import com.dell.isg.smi.wsman.command.GetConfigResultsCmd;
 import com.dell.isg.smi.wsman.command.GetDeviceLicensesCmd;
 import com.dell.isg.smi.wsman.command.NicAttributeConstants;
+import com.dell.isg.smi.wsman.command.PeviewImportConfigCmd;
 import com.dell.isg.smi.wsman.command.RaidAttributeConstants;
 import com.dell.isg.smi.wsman.command.entity.ControllerBatteryView;
 import com.dell.isg.smi.wsman.command.entity.ControllerView;
@@ -279,14 +284,49 @@ public class ServerAdapterOnboardingDelegate {
 		return config;
 	}
 
-	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare,
-			int shutdownType)  throws Exception {
+	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, int shutdownType)
+			throws Exception {
 		ApplyXmlConfigCmd xmlConfig = new ApplyXmlConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
 				networkShare.getShareUserName(), networkShare.getSharePassword(), shutdownType);
 		XmlConfig config = xmlConfig.execute();
 		return config;
+	}
+
+	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		PeviewImportConfigCmd xmlConfig = new PeviewImportConfigCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
+				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
+				networkShare.getShareUserName(), networkShare.getSharePassword());
+		XmlConfig config = xmlConfig.execute();
+		return config;
+	}
+	
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
+		ExportHardwareInventoryCmd cmd = new ExportHardwareInventoryCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
+				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
+				networkShare.getShareUserName(), networkShare.getSharePassword());
+		XmlConfig config = cmd.execute();
+		return config;
+	}
+	
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
+		ExportFactorySettingConfigCmd cmd = new ExportFactorySettingConfigCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
+				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
+				networkShare.getShareUserName(), networkShare.getSharePassword());
+		XmlConfig config = cmd.execute();
+		return config;
+	}
+
+	public String previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
+		GetConfigResultsCmd cmd = new GetConfigResultsCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
+				wsmanCredentials.getPassword(), jobId);
+		String json = XML.toJSONObject((String) cmd.execute()).toString();
+		return json;
 	}
 
 	public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {

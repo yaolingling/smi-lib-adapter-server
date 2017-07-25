@@ -180,4 +180,30 @@ public class ServerAdapterImpl implements IServerAdapter {
 	}
 
 
+	@Override
+	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
+		return saOnboardingDelegate.previewImportServerConfig(wsmanCredentials, networkShare);
+	}
+
+
+	@Override
+	public Object previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
+		return saOnboardingDelegate.previewConfigResults(wsmanCredentials, jobId);
+	}
+
+
+	@Override
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		return saOnboardingDelegate.exportHardwareInventory(wsmanCredentials, networkShare);
+	}
+
+
+	@Override
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception {
+		return saOnboardingDelegate.exportFactorySetting(wsmanCredentials, networkShare);
+	}
+
+
 }
