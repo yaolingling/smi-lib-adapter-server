@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+	<bean id="wsmanCredentials"
+		class="com.dell.isg.smi.adapter.server.model.WsmanCredentials">
+		<property name="address" value="100.68.124.31" />
+		<property name="userName" value="root" />
+		<property name="password" value="calvin" />
+	</bean>
+	
+	<bean id="networkShare"
+		class="com.dell.isg.smi.adapter.server.model.NetworkShare">
+		<property name="shareType" value="NFS" />
+		<property name="shareName" value="/home/proxyserver/share" />
+		<property name="shareAddress" value="100.68.124.32" />
+		<property name="fileName" value="ExportFactorySetting.xml" />
+		<property name="shareUserName" value="" />
+		<property name="sharePassword" value="" />		
+	</bean>
+
+    <bean id="serverAdapterImpl" class="com.dell.isg.smi.adapter.server.ServerAdapterImpl" />
+	
+ 	<bean id="saConfigDelegate" class="com.dell.isg.smi.adapter.server.delegate.ServerAdapterConfigurationDelegate" />
+
+	<bean id="saOnboardingDelegate" class="com.dell.isg.smi.adapter.server.delegate.ServerAdapterOnboardingDelegate" />
+
+</beans>

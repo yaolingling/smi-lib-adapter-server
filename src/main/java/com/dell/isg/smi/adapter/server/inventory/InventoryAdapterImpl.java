@@ -14,7 +14,7 @@ import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.wsmanclient.IWSManClient;
 import com.dell.isg.smi.wsmanclient.WSManClientFactory;
 import com.dell.isg.smi.wsmanclient.impl.DefaultEnumerate;
-import com.dell.isg.smi.wsmanclient.WSManConstants.WSManClassEnum;
+import com.dell.isg.smi.wsman.command.WSManClassEnum;
 
 @Component("inventoryAdapter, inventoryAdapterImpl")
 public class InventoryAdapterImpl implements IInventoryAdapter {
@@ -26,24 +26,22 @@ public class InventoryAdapterImpl implements IInventoryAdapter {
         logger.info("collecting hardware inventory for {} ", credentials.getAddress());
         Map<String, Object> results = new LinkedHashMap<>();
 
-        IWSManClient IWSManClient = WSManClientFactory.getClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
-        IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemView));
-
-        results.put(WSManClassEnum.DCIM_SystemView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemView)));
-        results.put(WSManClassEnum.DCIM_Memoryview.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Memoryview)));
-        results.put(WSManClassEnum.DCIM_Powersupplyview.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Powersupplyview)));
-        results.put(WSManClassEnum.DCIM_CPUView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_CPUView)));
-        results.put(WSManClassEnum.DCIM_VFlashView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_VFlashView)));
-        results.put(WSManClassEnum.DCIM_FanView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_FanView)));
-        results.put(WSManClassEnum.DCIM_EnclosureView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_EnclosureView)));
-        results.put(WSManClassEnum.DCIM_VirtualDiskView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_VirtualDiskView)));
-        results.put(WSManClassEnum.DCIM_Sensor.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Sensor)));
-        results.put(WSManClassEnum.DCIM_NumericSensor.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_NumericSensor)));
-        results.put(WSManClassEnum.DCIM_SystemString.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemString)));
-        results.put(WSManClassEnum.DCIM_ControllerView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_ControllerView)));
-        results.put(WSManClassEnum.DCIM_ControllerBatteryView.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_ControllerBatteryView)));
-        results.put(WSManClassEnum.DCIM_RAIDEnumeration.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_RAIDEnumeration)));
-        results.put(WSManClassEnum.DCIM_RAIDInteger.name(), IWSManClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_RAIDInteger))); 
+        IWSManClient wsmanClient = WSManClientFactory.getClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
+        results.put(WSManClassEnum.DCIM_SystemView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemView)));
+        results.put(WSManClassEnum.DCIM_Memoryview.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Memoryview)));
+        results.put(WSManClassEnum.DCIM_Powersupplyview.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Powersupplyview)));
+        results.put(WSManClassEnum.DCIM_CPUView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_CPUView)));
+        results.put(WSManClassEnum.DCIM_VFlashView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_VFlashView)));
+        results.put(WSManClassEnum.DCIM_FanView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_FanView)));
+        results.put(WSManClassEnum.DCIM_EnclosureView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_EnclosureView)));
+        results.put(WSManClassEnum.DCIM_VirtualDiskView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_VirtualDiskView)));
+        results.put(WSManClassEnum.DCIM_Sensor.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_Sensor)));
+        results.put(WSManClassEnum.DCIM_NumericSensor.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_NumericSensor)));
+        results.put(WSManClassEnum.DCIM_SystemString.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_SystemString)));
+        results.put(WSManClassEnum.DCIM_ControllerView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_ControllerView)));
+        results.put(WSManClassEnum.DCIM_ControllerBatteryView.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_ControllerBatteryView)));
+        results.put(WSManClassEnum.DCIM_RAIDEnumeration.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_RAIDEnumeration)));
+        results.put(WSManClassEnum.DCIM_RAIDInteger.name(), wsmanClient.execute(new DefaultEnumerate<Object>(WSManClassEnum.DCIM_RAIDInteger))); 
         return results;
 
     }
