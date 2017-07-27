@@ -241,4 +241,53 @@ public interface IConfigAdapter {
 	 */
 	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
 			throws Exception;
+	
+	/**
+	 * Wipe Life controller
+	 * 
+	 * @param wsmanCredentials
+	 * @return
+	 * @throws Exception
+	 */
+	public XmlConfig wipeLifeController(WsmanCredentials wsmanCredentials) throws Exception;
+	
+	/**
+	 * System Erase
+	 * 
+	 * @param wsmanCredentials
+	 * @return
+	 * @throws Exception
+	 */
+	public XmlConfig performSystemEarse(WsmanCredentials wsmanCredentials, String[] components) throws Exception;
+	
+	/**
+	 * Backup Server Image
+	 * 
+	 * @param wsmanCredentials
+	 * @return
+	 * @throws Exception
+	 */
+	public XmlConfig backupServerImage(WsmanCredentials wsmanCredentials, NetworkShare networkShare,  String passphrase, String imageName,
+			String workgroup, String scheduleStartTime, String untilTime) throws Exception;
+	
+	/**
+	 * Restore Server Image
+	 * 
+	 * @param wsmanCredentials
+	 * @return
+	 * @throws Exception
+	 */
+	public XmlConfig restoreServerImage(WsmanCredentials wsmanCredentials, NetworkShare networkShare,  String passphrase, String imageName,
+			String workgroup, String scheduleStartTime, String untilTime, String preserveVDConfig) throws Exception;
+	
+	/**
+	 * Verify the share connectivity from server.
+	 * 
+	 * @param wsmanCredentials
+	 * @param networkShare
+	 * @return
+	 * @throws Exception
+	 */
+	public String verifyServerNetworkShareConnectivity(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
 }
