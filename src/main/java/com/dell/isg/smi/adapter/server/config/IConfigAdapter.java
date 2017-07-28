@@ -3,6 +3,9 @@
  */
 package com.dell.isg.smi.adapter.server.config;
 
+import java.util.List;
+import java.util.Map;
+
 import com.dell.isg.smi.adapter.server.model.NetworkShare;
 import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.wsman.model.XmlConfig;
@@ -289,5 +292,34 @@ public interface IConfigAdapter {
 	 * @throws Exception
 	 */
 	public String verifyServerNetworkShareConnectivity(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
+			throws Exception;
+	
+
+	/**
+	 * 
+	 * Update Bios attribute
+	 * 
+	 * @param wsmanCredentials
+	 * @param attributeNames
+	 * @param attributeValues
+	 * @param isCreateConfigJob
+	 * @return
+	 * @throws Exception
+	 */
+	public String updateBiosAttributes(WsmanCredentials wsmanCredentials, Map<String, String> attributes, boolean isCreateConfigJob)
+			throws Exception;
+	
+
+	/**
+	 * 
+	 * Change boot order.
+	 * 
+	 * @param wsmanCredentials
+	 * @param instanceType
+	 * @param instanceIdList
+	 * @return
+	 * @throws Exception
+	 */
+	public String changeBootOrder(WsmanCredentials wsmanCredentials, String instanceType, List<String> instanceIdList)
 			throws Exception;
 }

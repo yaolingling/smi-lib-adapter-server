@@ -6,6 +6,7 @@ package com.dell.isg.smi.adapter.server.config;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,6 +24,7 @@ import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
 import com.dell.isg.smi.wsman.command.ApplyXmlConfigCmd;
 import com.dell.isg.smi.wsman.command.BackupImageCmd;
+import com.dell.isg.smi.wsman.command.ChangeBootOrderCmd;
 import com.dell.isg.smi.wsman.command.ExportFactorySettingConfigCmd;
 import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
@@ -39,6 +41,7 @@ import com.dell.isg.smi.wsman.command.RestoreImageCmd;
 import com.dell.isg.smi.wsman.command.SetEventsCmd;
 import com.dell.isg.smi.wsman.command.SystemEraseCmd;
 import com.dell.isg.smi.wsman.command.TestNetworkShareCmd;
+import com.dell.isg.smi.wsman.command.UpdateBIOSAttributesCmd;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
 import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
@@ -434,12 +437,30 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	@Override
 	public String verifyServerNetworkShareConnectivity(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
 			throws Exception {
-		TestNetworkShareCmd cmd = new TestNetworkShareCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
-				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
-				networkShare.getShareUserName(), networkShare.getSharePassword());
+		TestNetworkShareCmd cmd = new TestNetworkShareCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
+				wsmanCredentials.getPassword(), networkShare.getShareType().getValue(), networkShare.getShareName(),
+				networkShare.getShareAddress(), networkShare.getFileName(), networkShare.getShareUserName(),
+				networkShare.getSharePassword());
 		String config = cmd.execute();
 		return config;
+	}
+
+	@Override
+	public String updateBiosAttributes(WsmanCredentials wsmanCredentials, Map<String, String> attributes,
+			boolean isCreateConfigJob) throws Exception {
+		UpdateBIOSAttributesCmd cmd = new UpdateBIOSAttributesCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), attributes, isCreateConfigJob);
+		String result = cmd.execute();
+		return result;
+	}
+
+	@Override
+	public String changeBootOrder(WsmanCredentials wsmanCredentials, String instanceType, List<String> instanceIdList)
+			throws Exception {
+		ChangeBootOrderCmd cmd = new ChangeBootOrderCmd(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(),instanceType,instanceIdList);
+		String result = cmd.execute();
+		return result;
 	}
 
 }
