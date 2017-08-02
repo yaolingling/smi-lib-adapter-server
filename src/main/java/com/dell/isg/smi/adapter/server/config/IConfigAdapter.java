@@ -261,7 +261,7 @@ public interface IConfigAdapter {
 	 * @return
 	 * @throws Exception
 	 */
-	public XmlConfig performSystemEarse(WsmanCredentials wsmanCredentials, String[] components) throws Exception;
+	public XmlConfig performSystemErase(WsmanCredentials wsmanCredentials, String[] components) throws Exception;
 	
 	/**
 	 * Backup Server Image

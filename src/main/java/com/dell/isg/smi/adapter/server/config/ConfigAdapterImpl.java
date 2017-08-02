@@ -404,7 +404,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public XmlConfig performSystemEarse(WsmanCredentials wsmanCredentials, String[] components) throws Exception {
+	public XmlConfig performSystemErase(WsmanCredentials wsmanCredentials, String[] components) throws Exception {
 		SystemEraseCmd cmd = new SystemEraseCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
 				wsmanCredentials.getPassword(), components);
 		XmlConfig config = cmd.execute();
