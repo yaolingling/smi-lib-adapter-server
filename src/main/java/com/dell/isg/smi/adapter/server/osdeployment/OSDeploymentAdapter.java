@@ -6,6 +6,7 @@
  */
 package com.dell.isg.smi.adapter.server.osdeployment;
 
+import com.dell.isg.smi.adapter.server.model.WsmanCredentials;
 import com.dell.isg.smi.commons.model.credential.PasswordCredential;
 import com.dell.isg.smi.commons.model.server.JobStatus;
 
@@ -14,8 +15,6 @@ import com.dell.isg.smi.commons.model.server.JobStatus;
  *
  */
 public interface OSDeploymentAdapter {
-    public JobStatus connectToNetworkISO(String oobIp, PasswordCredential oobCredentials, String isoIpAddress, String isoSharePath, String isoFileName);
-
-
-    public JobStatus rebootServer(String ipAddr, String userName, String password);
+    public JobStatus connectToNetworkISO(WsmanCredentials cred, String shareIpAddress, String sharePath, String fileName);
+    public JobStatus rebootServer(String serverAddress, String userName, String password);
 }
