@@ -1,2 +1,4 @@
 include ':smi-lib-wsman'
 project(':smi-lib-wsman').projectDir = new File (settingsDir, '../smi-lib-wsman')
+include ':smi-lib-wiseman'
+project(':smi-lib-wiseman').projectDir = new File (settingsDir, '../smi-lib-wiseman')
