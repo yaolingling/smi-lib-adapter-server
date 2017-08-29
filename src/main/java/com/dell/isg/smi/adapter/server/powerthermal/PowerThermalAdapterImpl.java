@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
+ * Copyright Â© 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
  */
 
 package com.dell.isg.smi.adapter.server.powerthermal;
@@ -79,8 +79,9 @@ public class PowerThermalAdapterImpl implements IPowerThermalAdapter {
 
 
     public JobStatus createConfigJob(WsmanCredentials credentials) throws Exception {
+    	String target = "System.Embedded.1";
 
-        CreateConfigJobCmd configCmd = new CreateConfigJobCmd(credentials.getAddress(), credentials.getUserName(), credentials.getPassword(), false);
+        CreateConfigJobCmd configCmd = new CreateConfigJobCmd(credentials.getAddress(), credentials.getUserName(), credentials.getPassword(), false, target);
         ConfigJobDetail job = configCmd.execute();
         return this.getJobStatus(job);
 
