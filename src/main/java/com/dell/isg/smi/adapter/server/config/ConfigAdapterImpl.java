@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
+ * Copyright ï¿½ 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
  */
 package com.dell.isg.smi.adapter.server.config;
 
@@ -25,6 +25,8 @@ import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
 import com.dell.isg.smi.wsman.command.ApplyXmlConfigCmd;
 import com.dell.isg.smi.wsman.command.BackupImageCmd;
 import com.dell.isg.smi.wsman.command.ChangeBootOrderCmd;
+import com.dell.isg.smi.wsman.command.ChangeBootSourceStateCmd;
+import com.dell.isg.smi.wsman.command.CreateConfigJobCmd;
 import com.dell.isg.smi.wsman.command.ExportFactorySettingConfigCmd;
 import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
@@ -43,6 +45,8 @@ import com.dell.isg.smi.wsman.command.SystemEraseCmd;
 import com.dell.isg.smi.wsman.command.TestNetworkShareCmd;
 import com.dell.isg.smi.wsman.command.UpdateBIOSAttributesCmd;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
+import com.dell.isg.smi.wsman.command.entity.ConfigJobDetail;
+import com.dell.isg.smi.wsman.command.entity.ConfigJobDetail.ConfigJobReturnCode;
 import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
@@ -450,6 +454,26 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 		ChangeBootOrderCmd cmd = new ChangeBootOrderCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(),instanceType,instanceIdList);
 		String result = cmd.execute();
 		return result;
+	}
+
+	@Override
+	public String changeBootSourceState(WsmanCredentials wsmanCredentials, List<String> instanceIdList,
+			boolean isEnabled, String instanceType) throws Exception {
+		ChangeBootSourceStateCmd cmd = new ChangeBootSourceStateCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), instanceIdList, isEnabled, instanceType);
+		String result = cmd.execute();
+		return result;
+	}
+
+	@Override
+	public String createTargetConfigJob(WsmanCredentials wsmanCredentials, String target) throws Exception {
+		String jobId = null;
+		CreateConfigJobCmd cmd = new CreateConfigJobCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), true, target);
+		ConfigJobDetail result = cmd.execute();
+		List<String> jobList = result.getJobList();
+		if (CollectionUtils.isNotEmpty(jobList)) {
+			jobId = result.getJobList().get(0);			
+		}
+		return jobId;
 	}
 
 }
