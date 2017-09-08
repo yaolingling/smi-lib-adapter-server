@@ -43,7 +43,6 @@ import com.dell.isg.smi.wsman.command.SystemEraseCmd;
 import com.dell.isg.smi.wsman.command.TestNetworkShareCmd;
 import com.dell.isg.smi.wsman.command.UpdateBIOSAttributesCmd;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
-import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
 import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
