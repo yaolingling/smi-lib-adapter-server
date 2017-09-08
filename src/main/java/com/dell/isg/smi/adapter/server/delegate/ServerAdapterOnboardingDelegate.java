@@ -153,57 +153,63 @@ public class ServerAdapterOnboardingDelegate {
 		 * iDRAC side, will remove when fixed and diagnosed.
 		 */
 		logger.info("collecting System Identity Info for {} ", credentials.getAddress());
-		IdracWSManClient idracWSManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(),
-				credentials.getUserName(), credentials.getPassword());
-		DCIMSystemViewType response = null;
-		for (int i = 0; i < MAX_RETRY; i++) {
-			try {
-				logger.info("==================== " + i + "====================");
-				response = idracWSManClient.execute(new EnumerateSystemViewCmd());
-				if (response != null)
-					return response;
-			} catch (Exception exp) {
-				logger.info(exp.toString(), exp);
-				if (i == MAX_RETRY)
-					throw exp;
-			}
+		IdracWSManClient idracWSManClient = null;
+        DCIMSystemViewType response = null;
+		try{
+		    idracWSManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(), credentials.getUserName(), credentials.getPassword());
+    		for (int i = 0; i < MAX_RETRY; i++) {
+    			try {
+    				logger.info("==================== " + i + "====================");
+    				response = idracWSManClient.execute(new EnumerateSystemViewCmd());
+    				if (response != null)
+    					return response;
+    			} catch (Exception exp) {
+    				logger.info(exp.toString(), exp);
+    				if (i == MAX_RETRY)
+    					throw exp;
+    			}
+    		}
+		} finally {
+		    idracWSManClient.close();
 		}
 		return response;
-
 	}
 
 	private HardwareInventory buildHardwareInventory(WsmanCredentials credentials) throws Exception {
 		logger.info("Building hardware inventory for {} ", credentials.getAddress());
 		HardwareInventory hardwareInventory = new HardwareInventory();
-		IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(),
-				credentials.getUserName(), credentials.getPassword());
-		hardwareInventory.setSystem(idracWsManClient.execute(new EnumerateSystemViewCmd()));
-		hardwareInventory.setMemoryView(idracWsManClient.execute(new EnumerateMemoryViewCmd()));
-		hardwareInventory.setNicView(buildNicView(idracWsManClient));
-		hardwareInventory.setPowerSupplyView(idracWsManClient.execute(new EnumeratePowerSupplyViewCmd()));
-		hardwareInventory.setFanView(buildFans(idracWsManClient));
-		hardwareInventory.setCpuView(idracWsManClient.execute(new EnumerateCPUViewCmd()));
-		hardwareInventory.setRemovableMedia(idracWsManClient.execute(new EnumerateVFlashViewCmd()));
-		hardwareInventory.setStorage(buildStorage(idracWsManClient));
-		hardwareInventory.setTemperatureView(buildTemperatureView(idracWsManClient));
-		List<SensorView> sensors = idracWsManClient.execute(new EnumerateSensorViewCmd());
-		for (SensorView sensorView : sensors) {
-			if (sensorView.isBattery()) {
-				hardwareInventory.getBatteryView().add(sensorView);
-			} else if (sensorView.isVoltage()) {
-				hardwareInventory.getVoltageView().add(sensorView);
-			}
-		}
+		IdracWSManClient idracWsManClient = null;
 		try {
-			PowerMonitoring powerMonitoring = buildPowerMonitoring(idracWsManClient);
-			powerMonitoring.setPowerCap(
-					hardwareInventory.getSystem().getPowerCap().getValue() + " " + PowerMonitoringConstants.WATT);
-			hardwareInventory.setPowerMonitoring(powerMonitoring);
-		} catch (Exception e) {
-			logger.error("Failed to build  for PowerMonitoring {} ", credentials.getAddress());
+		    idracWsManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(),credentials.getUserName(), credentials.getPassword());
+    		hardwareInventory.setSystem(idracWsManClient.execute(new EnumerateSystemViewCmd()));
+    		hardwareInventory.setMemoryView(idracWsManClient.execute(new EnumerateMemoryViewCmd()));
+    		hardwareInventory.setNicView(buildNicView(idracWsManClient));
+    		hardwareInventory.setPowerSupplyView(idracWsManClient.execute(new EnumeratePowerSupplyViewCmd()));
+    		hardwareInventory.setFanView(buildFans(idracWsManClient));
+    		hardwareInventory.setCpuView(idracWsManClient.execute(new EnumerateCPUViewCmd()));
+    		hardwareInventory.setRemovableMedia(idracWsManClient.execute(new EnumerateVFlashViewCmd()));
+    		hardwareInventory.setStorage(buildStorage(idracWsManClient));
+    		hardwareInventory.setTemperatureView(buildTemperatureView(idracWsManClient));
+    		List<SensorView> sensors = idracWsManClient.execute(new EnumerateSensorViewCmd());
+    		for (SensorView sensorView : sensors) {
+    			if (sensorView.isBattery()) {
+    				hardwareInventory.getBatteryView().add(sensorView);
+    			} else if (sensorView.isVoltage()) {
+    				hardwareInventory.getVoltageView().add(sensorView);
+    			}
+    		}
+    		try {
+    			PowerMonitoring powerMonitoring = buildPowerMonitoring(idracWsManClient);
+    			powerMonitoring.setPowerCap(
+    					hardwareInventory.getSystem().getPowerCap().getValue() + " " + PowerMonitoringConstants.WATT);
+    			hardwareInventory.setPowerMonitoring(powerMonitoring);
+    		} catch (Exception e) {
+    			logger.error("Failed to build  for PowerMonitoring {} ", credentials.getAddress());
+    		}
+    		logger.info("Building hardware inventory finished for {} ", credentials.getAddress());
+		} finally {
+		    idracWsManClient.close();
 		}
-		logger.info("Building hardware inventory finished for {} ", credentials.getAddress());
-
 		return hardwareInventory;
 	}
 
@@ -331,10 +337,15 @@ public class ServerAdapterOnboardingDelegate {
 
 	public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception {
 		logger.info("Collecting NICs info for server onboarding ");
-		IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(),
-				credentials.getUserName(), credentials.getPassword());
-		return idracWsManClient.execute(new EnumerateNICView());
-
+		List<DCIMNICViewType> nicViewList;
+		IdracWSManClient idracWsManClient = null;
+		try {
+		    idracWsManClient = WSManClientFactory.getIdracWSManClient(credentials.getAddress(),credentials.getUserName(), credentials.getPassword());
+		    nicViewList = idracWsManClient.execute(new EnumerateNICView());
+		} finally {
+		    idracWsManClient.close();
+		}
+		return nicViewList;
 	}
 
 	private Storage buildStorage(IdracWSManClient idracWsManClient) throws Exception {

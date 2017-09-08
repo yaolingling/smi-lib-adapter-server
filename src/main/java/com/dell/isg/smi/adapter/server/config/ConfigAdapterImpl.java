@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
+ * Copyright Â© 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
  */
 package com.dell.isg.smi.adapter.server.config;
 
@@ -25,6 +25,8 @@ import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
 import com.dell.isg.smi.wsman.command.ApplyXmlConfigCmd;
 import com.dell.isg.smi.wsman.command.BackupImageCmd;
 import com.dell.isg.smi.wsman.command.ChangeBootOrderCmd;
+import com.dell.isg.smi.wsman.command.ChangeBootSourceStateCmd;
+import com.dell.isg.smi.wsman.command.CreateConfigJobCmd;
 import com.dell.isg.smi.wsman.command.ExportFactorySettingConfigCmd;
 import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
@@ -43,6 +45,9 @@ import com.dell.isg.smi.wsman.command.SystemEraseCmd;
 import com.dell.isg.smi.wsman.command.TestNetworkShareCmd;
 import com.dell.isg.smi.wsman.command.UpdateBIOSAttributesCmd;
 import com.dell.isg.smi.wsman.command.UpdateEventsCmd;
+import com.dell.isg.smi.wsman.command.entity.ConfigJobDetail;
+import com.dell.isg.smi.wsman.command.entity.ConfigJobDetail.ConfigJobReturnCode;
+import com.dell.isg.smi.wsman.command.entity.IDRACCardStringView;
 import com.dell.isg.smi.wsman.command.idraccmd.GetIdracEnumByInstanceId;
 import com.dell.isg.smi.wsman.command.idraccmd.IdracJobStatusCheckCmd;
 import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
@@ -205,17 +210,27 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 
 	@Override
 	public boolean startBlinkLed(WsmanCredentials wsmanCredentials, int duration) throws Exception {
-		IWSManClient client = WSManClientFactory.getClient(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
-		InvokeCmdResponse response = client.execute(new InvokeBlinkLedCmd(true, duration));
+	    IWSManClient client = null;
+	    InvokeCmdResponse response = null;
+	    try{
+	        client = WSManClientFactory.getClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+	        response = client.execute(new InvokeBlinkLedCmd(true, duration));
+	    } finally{
+		    client.close();
+		}
 		return (response.getReturnValue() == 0);
 	}
 
 	@Override
 	public boolean stopBlinkLed(WsmanCredentials wsmanCredentials) throws Exception {
-		IWSManClient client = WSManClientFactory.getClient(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
-		InvokeCmdResponse response = client.execute(new InvokeBlinkLedCmd(false));
+        IWSManClient client = null;
+        InvokeCmdResponse response = null;
+        try{
+            client = WSManClientFactory.getClient(wsmanCredentials.getAddress(),wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+            response = client.execute(new InvokeBlinkLedCmd(false));
+        } finally{
+            client.close();
+        }
 		return (response.getReturnValue() == 0);
 	}
 
@@ -256,8 +271,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	@Override
 	public boolean isSupportedLicenseInstalled(WsmanCredentials wsmanCredentials) throws Exception {
 
-		GetDeviceLicensesCmd license = new GetDeviceLicensesCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), false);
+		GetDeviceLicensesCmd license = new GetDeviceLicensesCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), false);
 		List<DeviceLicense> deviceLicenseList = (List<DeviceLicense>) license.execute();
 		if (CollectionUtils.isEmpty(deviceLicenseList)) {
 			return false;
@@ -276,8 +290,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public String exportTechSupportReport(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
-			throws Exception {
+	public String exportTechSupportReport(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
 		logger.info("Exporting Technical Support Report started for server  {}", wsmanCredentials.getAddress());
 		ExportTechSupportReportCmd cmd = new ExportTechSupportReportCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
@@ -285,11 +298,9 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 				networkShare.getSharePassword());
 		String jobId = cmd.execute();
 		if (jobId == null) {
-			logger.error("Unable to create job to export TSR into local appliance share for server {} ",
-					wsmanCredentials.getAddress());
+			logger.error("Unable to create job to export TSR into local appliance share for server {} ", wsmanCredentials.getAddress());
 		}
-		logger.info("Exporting Technical Support Report triggered for target address {}  with jobId {}",
-				wsmanCredentials.getAddress(), jobId);
+		logger.info("Exporting Technical Support Report triggered for target address {}  with jobId {}", wsmanCredentials.getAddress(), jobId);
 		return jobId;
 	}
 
@@ -324,16 +335,13 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public Object pollJobStatus(WsmanCredentials credentials, String jobId, int sleepTimeInMillis, int retryCount)
-			throws Exception {
-		IdracJobStatusCheckCmd cmd = new IdracJobStatusCheckCmd(credentials.getAddress(), credentials.getUserName(),
-				credentials.getPassword(), jobId, sleepTimeInMillis, retryCount);
+	public Object pollJobStatus(WsmanCredentials credentials, String jobId, int sleepTimeInMillis, int retryCount) throws Exception {
+		IdracJobStatusCheckCmd cmd = new IdracJobStatusCheckCmd(credentials.getAddress(), credentials.getUserName(), credentials.getPassword(), jobId, sleepTimeInMillis, retryCount);
 		return cmd.execute();
 	}
 
 	@Override
-	public XmlConfig exportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String components,
-			String mode) throws Exception {
+	public XmlConfig exportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String components, String mode) throws Exception {
 		ExportXmlConfigCmd xmlConfig = new ExportXmlConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
@@ -343,8 +351,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, int shutdownType)
-			throws Exception {
+	public XmlConfig applyServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare, int shutdownType) throws Exception {
 		ApplyXmlConfigCmd xmlConfig = new ApplyXmlConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
@@ -354,8 +361,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
-			throws Exception {
+	public XmlConfig previewImportServerConfig(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
 		PeviewImportConfigCmd xmlConfig = new PeviewImportConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
@@ -365,8 +371,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
-			throws Exception {
+	public XmlConfig exportHardwareInventory(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
 		ExportHardwareInventoryCmd cmd = new ExportHardwareInventoryCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
@@ -376,8 +381,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
-			throws Exception {
+	public XmlConfig exportFactorySetting(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
 		ExportFactorySettingConfigCmd cmd = new ExportFactorySettingConfigCmd(wsmanCredentials.getAddress(),
 				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), networkShare.getShareType().getValue(),
 				networkShare.getShareName(), networkShare.getShareAddress(), networkShare.getFileName(),
@@ -388,31 +392,27 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 
 	@Override
 	public String previewConfigResults(WsmanCredentials wsmanCredentials, String jobId) throws Exception {
-		GetConfigResultsCmd cmd = new GetConfigResultsCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
-				wsmanCredentials.getPassword(), jobId);
+		GetConfigResultsCmd cmd = new GetConfigResultsCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), jobId);
 		String json = XML.toJSONObject((String) cmd.execute()).toString();
 		return json;
 	}
 
 	@Override
 	public XmlConfig wipeLifeController(WsmanCredentials wsmanCredentials) throws Exception {
-		LifeControllerWipeCmd cmd = new LifeControllerWipeCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+		LifeControllerWipeCmd cmd = new LifeControllerWipeCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
 		XmlConfig config = cmd.execute();
 		return config;
 	}
 
 	@Override
 	public XmlConfig performSystemErase(WsmanCredentials wsmanCredentials, String[] components) throws Exception {
-		SystemEraseCmd cmd = new SystemEraseCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
-				wsmanCredentials.getPassword(), components);
+		SystemEraseCmd cmd = new SystemEraseCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), components);
 		XmlConfig config = cmd.execute();
 		return config;
 	}
 
 	@Override
-	public XmlConfig backupServerImage(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String passphrase,
-			String imageName, String workgroup, String scheduleStartTime, String untilTime) throws Exception {
+	public XmlConfig backupServerImage(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String passphrase, String imageName, String workgroup, String scheduleStartTime, String untilTime) throws Exception {
 		BackupImageCmd cmd = new BackupImageCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
 				wsmanCredentials.getPassword(), networkShare.getShareType().getValue(), networkShare.getShareName(),
 				networkShare.getShareAddress(), networkShare.getShareUserName(), networkShare.getSharePassword(),
@@ -423,8 +423,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 
 	@Override
 	public XmlConfig restoreServerImage(WsmanCredentials wsmanCredentials, NetworkShare networkShare, String passphrase,
-			String imageName, String workgroup, String scheduleStartTime, String untilTime, String preserveVDConfig)
-			throws Exception {
+			String imageName, String workgroup, String scheduleStartTime, String untilTime, String preserveVDConfig) throws Exception {
 		RestoreImageCmd cmd = new RestoreImageCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
 				wsmanCredentials.getPassword(), networkShare.getShareType().getValue(), networkShare.getShareName(),
 				networkShare.getShareAddress(), networkShare.getShareUserName(), networkShare.getSharePassword(),
@@ -434,8 +433,7 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public String verifyServerNetworkShareConnectivity(WsmanCredentials wsmanCredentials, NetworkShare networkShare)
-			throws Exception {
+	public String verifyServerNetworkShareConnectivity(WsmanCredentials wsmanCredentials, NetworkShare networkShare) throws Exception {
 		TestNetworkShareCmd cmd = new TestNetworkShareCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(),
 				wsmanCredentials.getPassword(), networkShare.getShareType().getValue(), networkShare.getShareName(),
 				networkShare.getShareAddress(), networkShare.getFileName(), networkShare.getShareUserName(),
@@ -445,21 +443,37 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public String updateBiosAttributes(WsmanCredentials wsmanCredentials, Map<String, String> attributes,
-			boolean isCreateConfigJob) throws Exception {
-		UpdateBIOSAttributesCmd cmd = new UpdateBIOSAttributesCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), attributes, isCreateConfigJob);
+	public String updateBiosAttributes(WsmanCredentials wsmanCredentials, Map<String, String> attributes, boolean isCreateConfigJob) throws Exception {
+		UpdateBIOSAttributesCmd cmd = new UpdateBIOSAttributesCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), attributes, isCreateConfigJob);
 		String result = cmd.execute();
 		return result;
 	}
 
 	@Override
-	public String changeBootOrder(WsmanCredentials wsmanCredentials, String instanceType, List<String> instanceIdList)
-			throws Exception {
-		ChangeBootOrderCmd cmd = new ChangeBootOrderCmd(wsmanCredentials.getAddress(),
-				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(),instanceType,instanceIdList);
+	public String changeBootOrder(WsmanCredentials wsmanCredentials, String instanceType, List<String> instanceIdList) throws Exception {
+		ChangeBootOrderCmd cmd = new ChangeBootOrderCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(),instanceType,instanceIdList);
 		String result = cmd.execute();
 		return result;
+	}
+
+	@Override
+	public String changeBootSourceState(WsmanCredentials wsmanCredentials, List<String> instanceIdList,
+			boolean isEnabled, String instanceType) throws Exception {
+		ChangeBootSourceStateCmd cmd = new ChangeBootSourceStateCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), instanceIdList, isEnabled, instanceType);
+		String result = cmd.execute();
+		return result;
+	}
+
+	@Override
+	public String createTargetConfigJob(WsmanCredentials wsmanCredentials, String target) throws Exception {
+		String jobId = null;
+		CreateConfigJobCmd cmd = new CreateConfigJobCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), true, target);
+		ConfigJobDetail result = cmd.execute();
+		List<String> jobList = result.getJobList();
+		if (CollectionUtils.isNotEmpty(jobList)) {
+			jobId = result.getJobList().get(0);			
+		}
+		return jobId;
 	}
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
+ * Copyright Â© 2017 DELL Inc. or its subsidiaries.  All Rights Reserved.
  */
 package com.dell.isg.smi.adapter.server.config;
 
@@ -322,4 +322,30 @@ public interface IConfigAdapter {
 	 */
 	public String changeBootOrder(WsmanCredentials wsmanCredentials, String instanceType, List<String> instanceIdList)
 			throws Exception;
+	
+	/**
+	 * 
+	 * Change BootSourceState
+	 * 
+	 * @param wsmanCredentials
+	 * @param instanceIdList
+	 * @param isEnabled
+	 * @param instanceType
+	 * @return
+	 * @throws Exception
+	 */
+	public String changeBootSourceState(WsmanCredentials wsmanCredentials, List<String> instanceIdList, boolean isEnabled, String instanceType)
+	        throws Exception;
+	
+	/**
+	 * 
+	 * Create Target Config Job
+	 * 
+	 * @param wsmanCredentials
+	 * @param target
+	 * @return
+	 * @throws Exception
+	 */
+	public String createTargetConfigJob(WsmanCredentials wsmanCredentials, String target)
+	        throws Exception;
 }
