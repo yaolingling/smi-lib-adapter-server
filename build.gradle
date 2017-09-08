@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'org.sonarqube'
+//apply plugin: 'org.sonarqube'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.artifactory'
@@ -37,12 +37,12 @@ buildscript {
   //rules  = ['dependency-parentheses','overridden-dependency-version','duplicate-dependency-class', 'all-dependency','unused-dependency']
 //}
 
-sonarqube {
-     properties {
-     property "sonar.projectName", "rackhd :: smi-lib-adapter-server"
-     property "sonar.projectKey", "${group}::adapter-server"
-    }
-}
+//sonarqube {
+//     properties {
+//     property "sonar.projectName", "rackhd :: smi-lib-adapter-server"
+//     property "sonar.projectKey", "${group}::adapter-server"
+//    }
+//}
 
 jar {
     manifest {
@@ -86,14 +86,10 @@ ext {
 
 dependencies {
     //compile project(':smi-lib-wsman')
-    compile 'com.dell.isg.smi:wsmanlib:1.0.55'
+    compile 'com.dell.isg.smi:wsmanlib:1.0.51'
     compile 'com.dell.isg.smi:commons-elm:1.0.76'
     compile 'com.dell.isg.smi:commons-utilities:1.0.32'
-<<<<<<< HEAD
     compile 'com.dell.isg.smi:commons-model:1.0-SNAPSHOT'
-=======
-    compile 'com.dell.isg.smi:commons-model:1.0.89'
->>>>>>> upstream/master
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
