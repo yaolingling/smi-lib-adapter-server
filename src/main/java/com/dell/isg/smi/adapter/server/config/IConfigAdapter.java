@@ -343,9 +343,12 @@ public interface IConfigAdapter {
 	 * 
 	 * @param wsmanCredentials
 	 * @param target
+	 * @param untilTime 
+	 * @param scheduledStartTime 
+	 * @param rebootJobType 
 	 * @return
 	 * @throws Exception
 	 */
-	public String createTargetConfigJob(WsmanCredentials wsmanCredentials, String target)
+	public Map<String, String> createTargetConfigJob(WsmanCredentials wsmanCredentials, String target, int rebootJobType, String scheduledStartTime, String untilTime)
 	        throws Exception;
 }

@@ -27,6 +27,7 @@ import com.dell.isg.smi.wsman.command.BackupImageCmd;
 import com.dell.isg.smi.wsman.command.ChangeBootOrderCmd;
 import com.dell.isg.smi.wsman.command.ChangeBootSourceStateCmd;
 import com.dell.isg.smi.wsman.command.CreateConfigJobCmd;
+import com.dell.isg.smi.wsman.command.CreateTargetedConfigJob;
 import com.dell.isg.smi.wsman.command.ExportFactorySettingConfigCmd;
 import com.dell.isg.smi.wsman.command.ExportHardwareInventoryCmd;
 import com.dell.isg.smi.wsman.command.ExportTechSupportReportCmd;
@@ -465,15 +466,12 @@ public class ConfigAdapterImpl implements IConfigAdapter {
 	}
 
 	@Override
-	public String createTargetConfigJob(WsmanCredentials wsmanCredentials, String target) throws Exception {
-		String jobId = null;
-		CreateConfigJobCmd cmd = new CreateConfigJobCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), true, target);
-		ConfigJobDetail result = cmd.execute();
-		List<String> jobList = result.getJobList();
-		if (CollectionUtils.isNotEmpty(jobList)) {
-			jobId = result.getJobList().get(0);			
-		}
-		return jobId;
+	public Map<String, String> createTargetConfigJob(WsmanCredentials wsmanCredentials, String target, int rebootJobType, String scheduledStartTime, String untilTime) throws Exception {
+		CreateTargetedConfigJob cmd = new CreateTargetedConfigJob(wsmanCredentials.getAddress(),
+				wsmanCredentials.getUserName(), wsmanCredentials.getPassword(), target, rebootJobType,
+				scheduledStartTime, untilTime);
+		Map<String, String> result = (Map<String, String>) cmd.execute();
+		return result;
 	}
 
 }
