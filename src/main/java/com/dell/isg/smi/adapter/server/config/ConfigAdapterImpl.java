@@ -61,9 +61,9 @@ import com.dell.isg.smi.wsmanclient.WSManClientFactory;
 import com.dell.isg.smi.wsmanclient.model.InvokeCmdResponse;
 
 /**
- * @author prashanth.gowda
- * @param <IDRACCardStringViewList>
+ * The Class ConfigAdapterImpl.
  *
+ * @author prashanth.gowda
  */
 @Component("configAdapter, configAdapterImpl")
 public class ConfigAdapterImpl implements IConfigAdapter {

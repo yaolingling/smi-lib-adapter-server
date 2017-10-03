@@ -15,6 +15,7 @@ import com.dell.isg.smi.commons.elm.exception.RuntimeCoreException;
 import com.dell.isg.smi.commons.model.server.JobStatus;
 import com.dell.isg.smi.commons.model.server.JobStatusEnum;
 import com.dell.isg.smi.wsman.command.ConnectNetworkISOImageCmd;
+import com.dell.isg.smi.wsman.command.DetachISOImageCmd;
 import com.dell.isg.smi.wsman.command.PowerBootCmd;
 import com.dell.isg.smi.wsman.command.PowerBootCmd.PowerRebootEnum;
 import com.dell.isg.smi.wsman.entity.CommandResponse;
@@ -29,21 +30,10 @@ public class OSDeploymentAdapterImpl implements OSDeploymentAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(OSDeploymentAdapterImpl.class.getName());
 
 
-	/**
-	 * Mounts an ISO image on a server
-	 *
-	 * @param ipAddress the ip address of the OOB management card
-	 * @param username the userName for the OOB management card
-	 * @param password the password for the OOB management card
-	 * @param isoIpAddress the ip address of the share where the ISO resides
-	 * @param isoSharePath the share name and/or path for the iso file
-	 * @param isoFileName the ISO file name
-	 * @return the job status
-	 *
+	/* (non-Javadoc)
+	 * @see com.dell.isg.smi.adapter.server.osdeployment.OSDeploymentAdapter#connectToNetworkISO(com.dell.isg.smi.adapter.server.model.WsmanCredentials, java.lang.String, java.lang.String, java.lang.String)
 	 */
-
 	@Override
-
 	public JobStatus connectToNetworkISO(WsmanCredentials cred, String shareAddress, String sharePath, String fileName){
 
 		try {
@@ -72,13 +62,16 @@ public class OSDeploymentAdapterImpl implements OSDeploymentAdapter {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see com.dell.isg.smi.adapter.server.osdeployment.OSDeploymentAdapter#rebootServer(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
 	public JobStatus rebootServer(String serverAddress, String userName, String password) {
 		JobStatus status = new JobStatus();
 		try {
 			PowerBootCmd powerBootCmd = new PowerBootCmd(serverAddress, userName, password, PowerRebootEnum.valueOf("REBOOT"));
 			int result = powerBootCmd.execute().intValue();
-			logger.info("Reboot Executed");
+			logger.info("Reboot Executed, %s", result);
 		} catch (Exception e) {
 			RuntimeCoreException ex = new RuntimeCoreException(e);
 			ex.setErrorID(267069);
@@ -95,4 +88,38 @@ public class OSDeploymentAdapterImpl implements OSDeploymentAdapter {
 		status.setDescription("Server Reboot has been invoked and started rebooting");
 		return status;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.dell.isg.smi.adapter.server.osdeployment.OSDeploymentAdapter#detachISO(com.dell.isg.smi.adapter.server.model.WsmanCredentials)
+	 */
+	@Override
+    public JobStatus detachISO(WsmanCredentials wsmanCredentials) {
+	    JobStatus status = new JobStatus();
+	    status.setJobId("");
+	    status.setServerAddress(wsmanCredentials.getAddress());
+        try {
+            DetachISOImageCmd detachCmd = new DetachISOImageCmd(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
+            Object obj = detachCmd.execute();
+            if ( Boolean.TRUE.toString().equals(obj.toString())) {
+                status.setStatus(JobStatusEnum.LCJobStatus.COMPLETED.toString());
+                status.setMessage("DetachIso initiated");
+                status.setDescription("Server Detach Iso initiated");
+            } else {
+                status.setStatus(JobStatusEnum.LCJobStatus.FAILED.toString());
+                if(obj instanceof String){
+                    status.setMessage((String) obj);
+                }            
+            }
+        } catch (RuntimeCoreException e) {
+            throw e;
+        } catch (Exception e) {
+            RuntimeCoreException ex = new RuntimeCoreException(e);
+            ex.setErrorID(267069);
+            ex.addAttribute("DetachISOImage");
+            ex.addAttribute(wsmanCredentials.getAddress());
+            ex.addAttribute(e.getMessage());
+            throw ex;
+        }
+        return status;
+    }
 }
