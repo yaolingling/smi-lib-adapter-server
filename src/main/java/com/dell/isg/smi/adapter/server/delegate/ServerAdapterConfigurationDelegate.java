@@ -41,9 +41,9 @@ import com.dell.isg.smi.wsman.command.idraccmd.UpdateIdracAttributeCmd;
 import com.dell.isg.smi.wsman.entity.KeyValuePair;
 
 /**
- * @author prashanth.gowda
- * @param <IDRACCardStringViewList>
+ * The Class ServerAdapterConfigurationDelegate.
  *
+ * @author prashanth.gowda
  */
 @Component("saConfigDelegate")
 public class ServerAdapterConfigurationDelegate {
