@@ -176,17 +176,11 @@ public class ServerAdapterConfigurationDelegate {
     }
 
     
-    public List<IDRACCardStringView> getIdracCardStringView(WsmanCredentials creds) {
+    public List<IDRACCardStringView> getIdracCardStringView(WsmanCredentials creds) throws Exception {
     	
         EnumerateIDRACCardStrCmd enumerateIdracCardStrCmd = new EnumerateIDRACCardStrCmd(creds.getAddress(), creds.getUserName(), creds.getPassword());
         List<IDRACCardStringView> idracCardStringViewList = Collections.emptyList();
-        try {
-            idracCardStringViewList = enumerateIdracCardStrCmd.execute();
-        } catch (Exception e) {
-            logger.error("Unable to get IDRACCardStringViewList for:  {} ", creds.getAddress());
-        } finally {
-            logger.debug("Exiting getIdracCardStringView {} ", creds.getAddress());
-        }
+        idracCardStringViewList = enumerateIdracCardStrCmd.execute();
         return idracCardStringViewList;
     }
 
@@ -280,16 +274,9 @@ public class ServerAdapterConfigurationDelegate {
     }
 
 
-    public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) {
+    public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) throws Exception {
         logger.info("Entering enumerateDcimSoftwareIdentity {} ", wsmanCredentials.getAddress());
         IdracWSManClient idracWsManClient = WSManClientFactory.getIdracWSManClient(wsmanCredentials.getAddress(), wsmanCredentials.getUserName(), wsmanCredentials.getPassword());
-        try {
-            return idracWsManClient.execute(new EnumerateSoftwareIdentityCmd());
-        } catch (Exception e) {
-            logger.info("Unable to get firmware inventory from server: {} ", wsmanCredentials.getAddress());
-            throw new RuntimeCoreException("Unable to get firmware inventory from server with IP " + wsmanCredentials.getAddress(), e);
-        } finally {
-            logger.info("Exiting enumerateDcimSoftwareIdentity {} ", wsmanCredentials.getAddress());
-        }
+        return idracWsManClient.execute(new EnumerateSoftwareIdentityCmd());
     }
 }
