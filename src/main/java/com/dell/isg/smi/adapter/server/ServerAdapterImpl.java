@@ -156,7 +156,7 @@ public class ServerAdapterImpl implements IServerAdapter {
 
 
     @Override
-    public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) {
+    public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) throws Exception {
         return saConfigDelegate.enumerateDcimSoftwareIdentity(wsmanCredentials);
     }
 

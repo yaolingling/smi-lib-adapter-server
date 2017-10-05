@@ -63,7 +63,7 @@ public interface IServerAdapter {
 
 	public List<DCIMNICViewType> collectNics(WsmanCredentials credentials) throws Exception;
 
-	public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials);
+	public List<DCIMSoftwareIdentityType> enumerateDcimSoftwareIdentity(WsmanCredentials wsmanCredentials) throws Exception;
 
 	public List<IDRACCardStringView> collectIdracString(WsmanCredentials credentials) throws Exception;
 
